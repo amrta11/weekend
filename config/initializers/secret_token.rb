@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Weekend::Application.config.secret_key_base = '1a5924c23f87c3636cb209490e7d9eff90c9e20c77ef226b2d59d727a8841a3bf757cb8565ffec77b17944c58999c03a89d3ece9233fc30c39d53cd49e812ee5'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Weekend::Application.config.secret_key_base = secure_token
